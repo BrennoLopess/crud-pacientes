@@ -1,6 +1,7 @@
 CRUD PACIENTES - Spring Boot + PostgreSQL + Docker
 
-================================================== 📌 SOBRE O PROJETO
+================================================== 
+📌 SOBRE O PROJETO
 ==================================================
 
 Sistema completo de CRUD (Create, Read, Update, Delete) de pacientes,
@@ -16,8 +17,9 @@ desenvolvido com arquitetura profissional utilizando:
 O projeto foi estruturado com foco em qualidade, organização,
 containerização e boas práticas de backend.
 
-================================================== 🚀 COMO EXECUTAR (UM
-COMANDO) ==================================================
+================================================== 
+🚀 COMO EXECUTAR (UM COMANDO) 
+==================================================
 
 Pré-requisito: - Docker instalado
 
@@ -27,7 +29,8 @@ docker compose up –build
 
 A aplicação estará disponível em: http://localhost:8080
 
-================================================== 🏗️ ARQUITETURA
+================================================== 
+🏗️ ARQUITETURA
 ==================================================
 
 Container 1: Aplicação Spring Boot Container 2: Banco PostgreSQL Volume
@@ -36,7 +39,8 @@ Docker: Persistência dos dados
 Banco gerenciado por migrations Flyway. DDL automático do Hibernate está
 desabilitado (ambiente profissional controlado por versionamento).
 
-================================================== 🧪 TESTES REALIZADOS
+================================================== 
+🧪 TESTES REALIZADOS
 ==================================================
 
 TESTE 1 - Criar Paciente ✔ Cadastro realizado com sucesso. ✔ Registro
@@ -59,16 +63,18 @@ select * from pacientes;
 
 ✔ Dados confirmados diretamente no banco.
 
-================================================== 📂 ESTRUTURA DO
-PROJETO ==================================================
+================================================== 
+📂 ESTRUTURA DO PROJETO 
+==================================================
 
 -   src/main/java → Camadas Controller, Service, Repository
 -   src/main/resources/db/migration → Scripts Flyway
 -   Dockerfile → Build da aplicação
 -   docker-compose.yml → Orquestração dos containers
 
-================================================== 🔐 BOAS PRÁTICAS
-IMPLEMENTADAS ==================================================
+================================================== 
+🔐 BOAS PRÁTICAS IMPLEMENTADAS 
+==================================================
 
 -   Separação clara de responsabilidades (Controller / Service /
     Repository)
@@ -78,8 +84,9 @@ IMPLEMENTADAS ==================================================
 -   Migrations versionadas
 -   Persistência em volume Docker
 
-================================================== 📈 CONSIDERAÇÕES
-FINAIS ==================================================
+================================================== 
+📈 CONSIDERAÇÕES FINAIS 
+==================================================
 
 Este projeto demonstra:
 
