@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CRUD Pacientes</title>
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+
+  body {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .container {
+    background: white;
+    width: 100%;
+    max-width: 900px;
+    padding: 28px;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.22);
+  }
+
+  h1 {
+    margin-bottom: 18px;
+    text-align: center;
+    color: #222;
+    letter-spacing: 0.2px;
+  }
+
+  .sub {
+    text-align: center;
+    color: #666;
+    margin-bottom: 18px;
+    font-size: 13px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .grid-1 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  label {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+  }
+
+  input {
+    padding: 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+  }
+
+  input:focus {
+    border-color: #2a5298;
+    box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.12);
+  }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  button {
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #2a5298;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.18s;
+    min-width: 160px;
+  }
+
+  button:hover { background: #1e3c72; }
+  button:disabled { opacity: 0.65; cursor: not-allowed; }
+
+  .btn-secondary {
+    background: #e9eef7;
+    color: #1e3c72;
+    border: 1px solid #c9d7f2;
+    min-width: 160px;
+  }
+  .btn-secondary:hover { background: #dbe6fa; }
+
+  .message {
+    margin-top: 10px;
+    font-size: 13px;
+    text-align: center;
+    min-height: 18px;
+  }
+  .success { color: #0b7a2a; }
+  .error { color: #c62828; }
+
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 12px 0 10px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  h2 { color: #222; }
+
+  .hint {
+    color: #666;
+    font-size: 12px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border-radius: 10px;
+  }
+
+  th, td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+    font-size: 14px;
+    vertical-align: middle;
+  }
+
+  th {
+    background: #f4f6fb;
+    color: #333;
+    font-weight: 600;
+  }
+
+  .row-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .btn-small {
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    min-width: auto;
+  }
+
+  .btn-danger { background: #c0392b; }
+  .btn-danger:hover { background: #a93226; }
+
+  .btn-edit { background: #2e7d32; }
+  .btn-edit:hover { background: #246428; }
+
+  .pill {
+    display: inline-block;
+    padding: 4px 8px;
+    background: #f4f6fb;
+    border: 1px solid #e6ebf7;
+    border-radius: 999px;
+    font-size: 12px;
+    color: #555;
+  }
+
+  @media (max-width: 700px) {
+    .grid { grid-template-columns: 1fr; }
+    .actions { flex-direction: column; align-items: stretch; }
+    button { width: 100%; }
+    .btn-secondary { width: 100%; }
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+  <h1>Cadastro de Pacientes</h1>
+  <div class="sub">Spring Boot + PostgreSQL + Docker (um comando só)</div>
+
+  <form id="pacienteForm" autocomplete="off">
+    <div class="grid">
+      <div class="field">
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" placeholder="Ex: Brenno Lopes" required />
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Ex: brenno@gmail.com" required />
+      </div>
+    </div>
+
+    <div class="grid-1">
+      <div class="field">
+        <label for="telefone">Telefone</label>
+        <input type="text" id="telefone" placeholder="Ex: 61999990000" required />
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="submit" id="btnSalvar">Salvar Paciente</button>
+      <button type="button" class="btn-secondary" id="btnCancelar" style="display:none;">Cancelar edição</button>
+      <span class="pill" id="modoPill">Modo: Criar</span>
+    </div>
+
+    <div id="message" class="message"></div>
+  </form>
+
+  <div class="header-row">
+    <h2>Lista de Pacientes</h2>
+    <div class="hint">Editar → carrega no formulário → salvar (PUT)</div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:70px;">ID</th>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Telefone</th>
+        <th style="width:220px;">Ações</th>
+      </tr>
+    </thead>
+    <tbody id="pacientesTable"></tbody>
+  </table>
+
+</div>
+
+<script>
+  // ✅ endpoint RELATIVO (funciona em docker/deploy/local)
+  const API_URL = "/api/pacientes";
+
+  const form = document.getElementById("pacienteForm");
+  const messageDiv = document.getElementById("message");
+  const tableBody = document.getElementById("pacientesTable");
+
+  const inputNome = document.getElementById("nome");
+  const inputEmail = document.getElementById("email");
+  const inputTelefone = document.getElementById("telefone");
+
+  const btnSalvar = document.getElementById("btnSalvar");
+  const btnCancelar = document.getElementById("btnCancelar");
+  const modoPill = document.getElementById("modoPill");
+
+  let editId = null;
+
+  function setLoading(isLoading) {
+    btnSalvar.disabled = isLoading;
+    btnCancelar.disabled = isLoading;
+    btnSalvar.textContent = isLoading ? "Salvando..." : (editId ? "Salvar alterações" : "Salvar Paciente");
+  }
+
+  function showMessage(msg, type) {
+    messageDiv.textContent = msg;
+    messageDiv.className = "message " + type;
+  }
+
+  function clearMessage() {
+    messageDiv.textContent = "";
+    messageDiv.className = "message";
+  }
+
+  function resetFormToCreate() {
+    editId = null;
+    form.reset();
+    btnCancelar.style.display = "none";
+    modoPill.textContent = "Modo: Criar";
+    btnSalvar.textContent = "Salvar Paciente";
+    clearMessage();
+  }
+
+  function normalizeTelefone(value) {
+    return value.replace(/\D/g, "");
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  async function listarPacientes() {
+    try {
+      const response = await fetch(API_URL);
+      if (!response.ok) {
+        showMessage("Erro ao listar pacientes.", "error");
+        return;
+      }
+      const data = await response.json();
+      renderTabela(data);
+    } catch (e) {
+      showMessage("Erro ao conectar com o servidor.", "error");
+    }
+  }
+
+  function renderTabela(data) {
+    tableBody.innerHTML = "";
+
+    if (!Array.isArray(data) || data.length === 0) {
+      const row = document.createElement("tr");
+      row.innerHTML = `<td colspan="5" style="color:#666;">Nenhum paciente cadastrado.</td>`;
+      tableBody.appendChild(row);
+      return;
+    }
+
+    data.forEach(p => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${p.id}</td>
+        <td>${escapeHtml(p.nome ?? "")}</td>
+        <td>${escapeHtml(p.email ?? "")}</td>
+        <td>${escapeHtml(p.telefone ?? "")}</td>
+        <td>
+          <div class="row-actions">
+            <button class="btn-small btn-edit" data-action="edit" data-id="${p.id}">Editar</button>
+            <button class="btn-small btn-danger" data-action="delete" data-id="${p.id}">Deletar</button>
+          </div>
+        </td>
+      `;
+      tableBody.appendChild(row);
+    });
+  }
+
+  tableBody.addEventListener("click", async (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+
+    const action = btn.getAttribute("data-action");
+    const id = Number(btn.getAttribute("data-id"));
+    if (!action || !id) return;
+
+    if (action === "edit") await carregarParaEditar(id);
+    if (action === "delete") await deletarPaciente(id);
+  });
+
+  async function carregarParaEditar(id) {
+    clearMessage();
+
+    try {
+      const response = await fetch(`${API_URL}/${id}`);
+      if (!response.ok) {
+        showMessage("Não foi possível carregar o paciente para edição.", "error");
+        return;
+      }
+
+      const p = await response.json();
+
+      editId = id;
+      inputNome.value = p.nome ?? "";
+      inputEmail.value = p.email ?? "";
+      inputTelefone.value = p.telefone ?? "";
+
+      btnCancelar.style.display = "inline-block";
+      modoPill.textContent = `Modo: Editar (ID ${id})`;
+      btnSalvar.textContent = "Salvar alterações";
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+    } catch (e) {
+      showMessage("Erro ao conectar com o servidor.", "error");
+    }
+  }
+
+  async function deletarPaciente(id) {
+    clearMessage();
+
+    const ok = confirm(`Tem certeza que deseja deletar o paciente ID ${id}?`);
+    if (!ok) return;
+
+    try {
+      const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+
+      if (!response.ok) {
+        const txt = await response.text();
+        showMessage(txt || "Erro ao deletar paciente.", "error");
+        return;
+      }
+
+      if (editId === id) resetFormToCreate();
+
+      showMessage("Paciente removido!", "success");
+      await listarPacientes();
+    } catch (e) {
+      showMessage("Erro ao conectar com o servidor.", "error");
+    }
+  }
+
+  btnCancelar.addEventListener("click", resetFormToCreate);
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearMessage();
+
+    const nome = inputNome.value.trim();
+    const email = inputEmail.value.trim();
+    const telefone = normalizeTelefone(inputTelefone.value.trim());
+
+    if (!nome || !email || !telefone) {
+      showMessage("Preencha todos os campos.", "error");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const payload = { nome, email, telefone };
+      const isEdit = editId !== null;
+
+      const response = await fetch(isEdit ? `${API_URL}/${editId}` : API_URL, {
+        method: isEdit ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const txt = await response.text();
+        showMessage(txt || "Erro ao salvar.", "error");
+        setLoading(false);
+        return;
+      }
+
+      showMessage(isEdit ? "Paciente atualizado com sucesso!" : "Paciente salvo com sucesso!", "success");
+
+      if (isEdit) resetFormToCreate();
+      else form.reset();
+
+      await listarPacientes();
+    } catch (e) {
+      showMessage("Erro ao conectar com o servidor.", "error");
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  listarPacientes();
+</script>
+
+</body>
+</html>

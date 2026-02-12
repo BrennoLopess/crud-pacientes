@@ -1,0 +1,7 @@
+package com.desabafa.crudpacientes.service;
+
+public class NotFoundException extends RuntimeException {
+  public NotFoundException(String message) {
+    super(message);
+  }
+}
