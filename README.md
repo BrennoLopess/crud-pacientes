@@ -1,117 +1,226 @@
-# CRUD Pacientes - Spring Boot + PostgreSQL + Docker
+# CRUD Pacientes • Spring Boot + PostgreSQL + Docker
 
-## 📌 Sobre o Projeto
+Sistema completo de gestão de **Pacientes e Psicólogos**, com arquitetura moderna, containerização e interface web integrada.
 
-Sistema completo de CRUD (Create, Read, Update, Delete) de pacientes, desenvolvido com arquitetura profissional utilizando:
+Projeto desenvolvido com foco em:
 
-- Spring Boot 3
-- PostgreSQL 15
-- Flyway (controle de migrations)
-- Docker + Docker Compose
-- Persistência em volume
-- Interface Web integrada
-
-O projeto foi estruturado com foco em qualidade, organização, containerização e boas práticas de backend.
+- Organização arquitetural
+- Boas práticas de backend
+- Versionamento de banco
+- Containerização profissional
+- Experiência de usuário no front-end
 
 ---
 
-## 🚀 Como Executar (um comando)
+# 🚀 Stack Tecnológica
 
-### Pré-requisito
+## Backend
+- Java 17+
+- Spring Boot 3
+- Spring Web
+- Spring Data JPA
+- Flyway
+
+## Banco de Dados
+- PostgreSQL 15
+- Migrations versionadas
+
+## Infraestrutura
+- Docker
+- Docker Compose
+- Volume persistente
+
+## Front-end
+- HTML5
+- CSS3 moderno (layout responsivo + UI estilizada)
+- JavaScript Vanilla
+- Consumo direto da API REST
+
+---
+
+# 🧠 Funcionalidades Implementadas
+
+## 👨‍⚕️ Psicólogos
+- Criar psicólogo
+- Listar psicólogos
+- Selecionar psicólogo para visualizar pacientes vinculados
+- Regra de negócio: bloqueio de exclusão se houver pacientes vinculados
+
+## 🧑‍🤝‍🧑 Pacientes
+- Criar paciente
+- Editar paciente
+- Remover paciente
+- Vincular paciente a psicólogo
+- Classificação por gravidade:
+  - BAIXO
+  - MODERADO
+  - CRITICO
+- Filtro por gravidade
+- Filtro por psicólogo
+- Busca textual
+
+---
+
+# 🗄️ Estrutura do Banco
+
+Controlada via **Flyway migrations**:
+
+```
+V1__create_table_pacientes.sql
+V2__create_table_psicologos.sql
+V3__alter_table_pacientes_add_psicologo.sql
+V4__add_gravidade_to_pacientes.sql
+```
+
+✔️ DDL automático do Hibernate está desabilitado  
+✔️ Estrutura controlada exclusivamente por versionamento  
+
+---
+
+# 🐳 Como Executar
+
+## Pré-requisitos
 - Docker instalado
 
-No diretório do projeto, execute:
+## Subir aplicação
 
 ```bash
 docker compose up --build
 ```
 
-A aplicação estará disponível em:
+Aplicação disponível em:
 
 ```
 http://localhost:8080
 ```
 
----
+API REST:
 
-## 🏗️ Arquitetura
-
-- Container 1: Aplicação Spring Boot  
-- Container 2: Banco PostgreSQL  
-- Volume Docker: Persistência dos dados  
-
-O banco é gerenciado por migrations Flyway.
-
-O DDL automático do Hibernate está desabilitado, garantindo ambiente controlado por versionamento.
+```
+GET /api/pacientes
+GET /api/psicologos
+```
 
 ---
 
-## 🧪 Testes Realizados
+# 🧪 Testes Realizados
 
-### ✅ Teste 1 - Criar Paciente
-- Cadastro realizado com sucesso
-- Registro persistido no PostgreSQL
+## ✅ CRUD Completo de Pacientes
+- POST funcionando
+- PUT funcionando
+- DELETE funcionando
+- Persistência validada
 
-### ✅ Teste 2 - Atualização (PUT)
-- Edição realizada corretamente
-- Dados atualizados refletidos no banco
+## ✅ CRUD de Psicólogos
+- Criação validada
+- Vínculo com pacientes funcionando
+- Regra de negócio aplicada corretamente
 
-### ✅ Teste 3 - Remoção (DELETE)
-- Registro removido corretamente
+## ✅ Persistência com Volume Docker
 
-### ✅ Teste 4 - Persistência em Volume Docker
-- Após `docker compose down` e `docker compose up`, os dados permaneceram
-- Com `docker compose down -v`, os dados foram apagados (reset controlado)
+Após:
 
-### ✅ Teste 5 - Consulta Direta no PostgreSQL
+```bash
+docker compose down
+docker compose up
+```
 
-Executado via terminal:
+Os dados permaneceram.
+
+Após:
+
+```bash
+docker compose down -v
+```
+
+Os dados foram resetados (comportamento esperado).
+
+## ✅ Validação Direta no Banco
+
+Acesso via:
 
 ```bash
 docker exec -it crud_pacientes_db psql -U postgres -d crud_pacientes
 ```
 
-Dentro do PostgreSQL:
+Consulta:
 
 ```sql
 select * from pacientes;
+select * from psicologos;
 ```
 
-Dados confirmados diretamente no banco.
+Dados confirmados diretamente no PostgreSQL.
 
 ---
 
-## 📂 Estrutura do Projeto
+# 🏗️ Arquitetura do Projeto
 
 ```
-src/main/java                    → Controllers, Services, Repositories
-src/main/resources/db/migration  → Scripts Flyway
-Dockerfile                       → Build da aplicação
-docker-compose.yml               → Orquestração dos containers
+src/main/java/com/desabafa/crudpacientes
+ ├── controller
+ ├── service
+ ├── repository
+ ├── domain
+ └── dto
+
+src/main/resources
+ ├── db/migration
+ └── static (front-end)
+
+Dockerfile
+docker-compose.yml
 ```
+
+### Padrão Arquitetural
+
+- Controller → Camada de entrada REST
+- Service → Regras de negócio
+- Repository → Persistência JPA
+- DTO → Isolamento de modelo externo
+- Domain → Entidades e enum
 
 ---
 
-## 🔐 Boas Práticas Implementadas
+# 🔐 Boas Práticas Aplicadas
 
-- Separação clara de responsabilidades (Controller / Service / Repository)
-- Banco isolado em container
-- Uso de variáveis de ambiente
-- Migrations versionadas
-- Persistência em volume Docker
-- Estrutura pronta para produção
+- Separação clara de responsabilidades
+- DTO para evitar exposição direta de entidades
+- Enum tipado para gravidade
+- Tratamento global de exceções
+- Flyway para versionamento de schema
+- Containerização desacoplada
+- Volume persistente
+- Front-end desacoplado consumindo API REST
+- Código organizado e preparado para evolução
 
 ---
 
-## 📈 Considerações Finais
+# 📈 Diferenciais Técnicos
 
-Este projeto demonstra:
+- Implementação de regra de integridade relacional
+- Filtros no front-end integrados à API
+- Enum mapeado corretamente no banco
+- Interface moderna com feedback visual
+- Estrutura preparada para deploy em ambiente real
+
+---
+
+# 🎯 Objetivo do Projeto
+
+Demonstrar domínio em:
 
 - Backend Java moderno
 - Integração com banco relacional
-- Controle de schema com Flyway
+- Versionamento de banco com Flyway
 - Containerização com Docker
-- Persistência de dados
-- Estrutura profissional organizada
+- Boas práticas arquiteturais
+- Organização de código profissional
+- Construção de API REST estruturada
 
-Desenvolvido para avaliação técnica demonstrando boas práticas e organização de projeto.
+---
+
+# 👨‍💻 Autor
+
+Brenno Lopes  
+Projeto desenvolvido para demonstração técnica e evolução profissional.
