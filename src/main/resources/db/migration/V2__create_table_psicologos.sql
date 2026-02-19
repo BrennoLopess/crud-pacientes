@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS psicologos (
+  id BIGSERIAL PRIMARY KEY,
+  nome VARCHAR(120) NOT NULL,
+  crp VARCHAR(20) NOT NULL UNIQUE,
+  especializacao VARCHAR(120)
+);

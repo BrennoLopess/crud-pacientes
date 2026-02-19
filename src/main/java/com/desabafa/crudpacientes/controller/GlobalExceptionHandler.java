@@ -16,16 +16,27 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(NotFoundException.class)
   public ResponseEntity<Map<String, Object>> handleNotFound(NotFoundException ex) {
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body(404, ex.getMessage()));
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(body(404, ex.getMessage()));
+  }
+
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body(body(400, ex.getMessage()));
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<Map<String, Object>> handleValidation(MethodArgumentNotValidException ex) {
     Map<String, Object> b = body(400, "Validação falhou");
+
     Map<String, String> fields = new HashMap<>();
-    ex.getBindingResult().getFieldErrors()
+    ex.getBindingResult()
+        .getFieldErrors()
         .forEach(err -> fields.put(err.getField(), err.getDefaultMessage()));
+
     b.put("fields", fields);
+
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(b);
   }
 

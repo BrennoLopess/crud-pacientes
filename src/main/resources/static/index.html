@@ -1,468 +1,287 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>CRUD Pacientes</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#05070f" />
+  <meta name="description" content="CRUD de Pacientes e Psicólogos • Spring Boot + PostgreSQL + Docker • Front-end moderno e responsivo." />
 
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+  <title>CRUD Pacientes • Java</title>
 
-  body {
-    background: linear-gradient(135deg, #1e3c72, #2a5298);
-    display: flex;
-    justify-content: center;
-    padding: 40px 20px;
-  }
+  <!-- Preconnect (safe mesmo local) -->
+  <link rel="preconnect" href="http://localhost:8080" crossorigin />
 
-  .container {
-    background: white;
-    width: 100%;
-    max-width: 900px;
-    padding: 28px;
-    border-radius: 14px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.22);
-  }
-
-  h1 {
-    margin-bottom: 18px;
-    text-align: center;
-    color: #222;
-    letter-spacing: 0.2px;
-  }
-
-  .sub {
-    text-align: center;
-    color: #666;
-    margin-bottom: 18px;
-    font-size: 13px;
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 22px;
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
-  .grid-1 {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  label {
-    font-size: 12px;
-    color: #555;
-    margin-bottom: 6px;
-    display: block;
-  }
-
-  .field {
-    display: flex;
-    flex-direction: column;
-  }
-
-  input {
-    padding: 12px;
-    border: 1px solid #d0d0d0;
-    border-radius: 8px;
-    font-size: 14px;
-    outline: none;
-  }
-
-  input:focus {
-    border-color: #2a5298;
-    box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.12);
-  }
-
-  .actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 6px;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-
-  button {
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    background: #2a5298;
-    color: white;
-    font-size: 14px;
-    cursor: pointer;
-    transition: 0.18s;
-    min-width: 160px;
-  }
-
-  button:hover { background: #1e3c72; }
-  button:disabled { opacity: 0.65; cursor: not-allowed; }
-
-  .btn-secondary {
-    background: #e9eef7;
-    color: #1e3c72;
-    border: 1px solid #c9d7f2;
-    min-width: 160px;
-  }
-  .btn-secondary:hover { background: #dbe6fa; }
-
-  .message {
-    margin-top: 10px;
-    font-size: 13px;
-    text-align: center;
-    min-height: 18px;
-  }
-  .success { color: #0b7a2a; }
-  .error { color: #c62828; }
-
-  .header-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin: 12px 0 10px;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  h2 { color: #222; }
-
-  .hint {
-    color: #666;
-    font-size: 12px;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    overflow: hidden;
-    border-radius: 10px;
-  }
-
-  th, td {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    text-align: left;
-    font-size: 14px;
-    vertical-align: middle;
-  }
-
-  th {
-    background: #f4f6fb;
-    color: #333;
-    font-weight: 600;
-  }
-
-  .row-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .btn-small {
-    padding: 8px 10px;
-    border-radius: 8px;
-    font-size: 13px;
-    min-width: auto;
-  }
-
-  .btn-danger { background: #c0392b; }
-  .btn-danger:hover { background: #a93226; }
-
-  .btn-edit { background: #2e7d32; }
-  .btn-edit:hover { background: #246428; }
-
-  .pill {
-    display: inline-block;
-    padding: 4px 8px;
-    background: #f4f6fb;
-    border: 1px solid #e6ebf7;
-    border-radius: 999px;
-    font-size: 12px;
-    color: #555;
-  }
-
-  @media (max-width: 700px) {
-    .grid { grid-template-columns: 1fr; }
-    .actions { flex-direction: column; align-items: stretch; }
-    button { width: 100%; }
-    .btn-secondary { width: 100%; }
-  }
-</style>
+  <!-- CSS -->
+  <link rel="stylesheet" href="./app.css" />
 </head>
 
 <body>
-<div class="container">
+  <!-- Background grid -->
+  <div class="bg-grid" aria-hidden="true"></div>
 
-  <h1>Cadastro de Pacientes</h1>
-  <div class="sub">Spring Boot + PostgreSQL + Docker (um comando só)</div>
+  <!-- Acessibilidade: pular para conteúdo -->
+  <a href="#conteudo" class="skip-link">Pular para o conteúdo</a>
 
-  <form id="pacienteForm" autocomplete="off">
-    <div class="grid">
-      <div class="field">
-        <label for="nome">Nome</label>
-        <input type="text" id="nome" placeholder="Ex: Brenno Lopes" required />
+  <header class="topbar" role="banner">
+    <div class="brand" aria-label="Marca do projeto">
+      <div class="logo" aria-hidden="true">
+        <span class="dot red"></span>
+        <span class="dot blue"></span>
+        <span class="dot white"></span>
       </div>
 
-      <div class="field">
-        <label for="email">Email</label>
-        <input type="email" id="email" placeholder="Ex: brenno@gmail.com" required />
-      </div>
-    </div>
-
-    <div class="grid-1">
-      <div class="field">
-        <label for="telefone">Telefone</label>
-        <input type="text" id="telefone" placeholder="Ex: 61999990000" required />
+      <div class="brand-text">
+        <div class="title">CRUD Pacientes</div>
+        <div class="subtitle">Spring Boot • PostgreSQL • Docker • Java Style</div>
       </div>
     </div>
 
-    <div class="actions">
-      <button type="submit" id="btnSalvar">Salvar Paciente</button>
-      <button type="button" class="btn-secondary" id="btnCancelar" style="display:none;">Cancelar edição</button>
-      <span class="pill" id="modoPill">Modo: Criar</span>
+    <div class="status" aria-label="Status da API e atalhos">
+      <span class="chip" id="apiStatus" role="status" aria-live="polite">API: checando...</span>
+      <a class="btn ghost" href="/api/pacientes" target="_blank" rel="noopener">/api/pacientes</a>
+      <a class="btn ghost" href="/api/psicologos" target="_blank" rel="noopener">/api/psicologos</a>
     </div>
+  </header>
 
-    <div id="message" class="message"></div>
-  </form>
+  <main class="layout" id="conteudo" role="main">
+    <!-- Coluna esquerda: Psicólogos -->
+    <section class="card" id="psicologosCard" aria-label="Gestão de psicólogos">
+      <div class="card-header">
+        <div>
+          <h2>Psicólogos</h2>
+          <p class="muted">Crie e selecione um psicólogo para ver os pacientes vinculados.</p>
+        </div>
 
-  <div class="header-row">
-    <h2>Lista de Pacientes</h2>
-    <div class="hint">Editar → carrega no formulário → salvar (PUT)</div>
-  </div>
+        <div class="header-actions">
+          <button class="btn" id="btnRefreshPsicologos" type="button" aria-label="Atualizar lista de psicólogos">
+            Atualizar
+          </button>
+        </div>
+      </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th style="width:70px;">ID</th>
-        <th>Nome</th>
-        <th>Email</th>
-        <th>Telefone</th>
-        <th style="width:220px;">Ações</th>
-      </tr>
-    </thead>
-    <tbody id="pacientesTable"></tbody>
-  </table>
+      <div class="split">
+        <!-- Form Psicólogo -->
+        <div class="form" aria-label="Formulário de cadastro de psicólogo">
+          <div class="form-title">Cadastrar Psicólogo</div>
 
-</div>
+          <div class="grid2">
+            <div class="field">
+              <label for="psNome">Nome</label>
+              <input
+                id="psNome"
+                type="text"
+                placeholder="Ex: Dra. Ana Silva"
+                autocomplete="name"
+                maxlength="120"
+              />
+            </div>
 
-<script>
-  // ✅ endpoint RELATIVO (funciona em docker/deploy/local)
-  const API_URL = "/api/pacientes";
-
-  const form = document.getElementById("pacienteForm");
-  const messageDiv = document.getElementById("message");
-  const tableBody = document.getElementById("pacientesTable");
-
-  const inputNome = document.getElementById("nome");
-  const inputEmail = document.getElementById("email");
-  const inputTelefone = document.getElementById("telefone");
-
-  const btnSalvar = document.getElementById("btnSalvar");
-  const btnCancelar = document.getElementById("btnCancelar");
-  const modoPill = document.getElementById("modoPill");
-
-  let editId = null;
-
-  function setLoading(isLoading) {
-    btnSalvar.disabled = isLoading;
-    btnCancelar.disabled = isLoading;
-    btnSalvar.textContent = isLoading ? "Salvando..." : (editId ? "Salvar alterações" : "Salvar Paciente");
-  }
-
-  function showMessage(msg, type) {
-    messageDiv.textContent = msg;
-    messageDiv.className = "message " + type;
-  }
-
-  function clearMessage() {
-    messageDiv.textContent = "";
-    messageDiv.className = "message";
-  }
-
-  function resetFormToCreate() {
-    editId = null;
-    form.reset();
-    btnCancelar.style.display = "none";
-    modoPill.textContent = "Modo: Criar";
-    btnSalvar.textContent = "Salvar Paciente";
-    clearMessage();
-  }
-
-  function normalizeTelefone(value) {
-    return value.replace(/\D/g, "");
-  }
-
-  function escapeHtml(str) {
-    return String(str)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  async function listarPacientes() {
-    try {
-      const response = await fetch(API_URL);
-      if (!response.ok) {
-        showMessage("Erro ao listar pacientes.", "error");
-        return;
-      }
-      const data = await response.json();
-      renderTabela(data);
-    } catch (e) {
-      showMessage("Erro ao conectar com o servidor.", "error");
-    }
-  }
-
-  function renderTabela(data) {
-    tableBody.innerHTML = "";
-
-    if (!Array.isArray(data) || data.length === 0) {
-      const row = document.createElement("tr");
-      row.innerHTML = `<td colspan="5" style="color:#666;">Nenhum paciente cadastrado.</td>`;
-      tableBody.appendChild(row);
-      return;
-    }
-
-    data.forEach(p => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${p.id}</td>
-        <td>${escapeHtml(p.nome ?? "")}</td>
-        <td>${escapeHtml(p.email ?? "")}</td>
-        <td>${escapeHtml(p.telefone ?? "")}</td>
-        <td>
-          <div class="row-actions">
-            <button class="btn-small btn-edit" data-action="edit" data-id="${p.id}">Editar</button>
-            <button class="btn-small btn-danger" data-action="delete" data-id="${p.id}">Deletar</button>
+            <div class="field">
+              <label for="psCrp">CRP</label>
+              <input
+                id="psCrp"
+                type="text"
+                placeholder="Ex: CRP-12345"
+                autocomplete="off"
+                maxlength="40"
+              />
+            </div>
           </div>
-        </td>
-      `;
-      tableBody.appendChild(row);
-    });
-  }
 
-  tableBody.addEventListener("click", async (e) => {
-    const btn = e.target.closest("button");
-    if (!btn) return;
+          <div class="field" style="margin-top: 12px;">
+            <label for="psEsp">Especialização</label>
+            <input
+              id="psEsp"
+              type="text"
+              placeholder="Ex: TCC, Psicanálise, Terapia..."
+              autocomplete="off"
+              maxlength="140"
+            />
+          </div>
 
-    const action = btn.getAttribute("data-action");
-    const id = Number(btn.getAttribute("data-id"));
-    if (!action || !id) return;
+          <div class="row">
+            <button class="btn danger" id="btnCriarPsicologo" type="button">
+              Criar Psicólogo
+            </button>
+            <button class="btn ghost" id="btnLimparPsicologo" type="button">
+              Limpar
+            </button>
+          </div>
 
-    if (action === "edit") await carregarParaEditar(id);
-    if (action === "delete") await deletarPaciente(id);
-  });
+          <div class="hint">
+            Dica: ao tentar deletar um psicólogo com pacientes vinculados, o backend bloqueia (regra de negócio).
+          </div>
+        </div>
 
-  async function carregarParaEditar(id) {
-    clearMessage();
+        <!-- Lista Psicólogos -->
+        <div class="list" aria-label="Lista de psicólogos">
+          <div class="list-head">
+            <div class="list-title">Lista</div>
+            <input
+              id="psFiltro"
+              class="search"
+              placeholder="Buscar por nome/CRP..."
+              autocomplete="off"
+              aria-label="Buscar psicólogo por nome, CRP ou especialização"
+            />
+          </div>
 
-    try {
-      const response = await fetch(`${API_URL}/${id}`);
-      if (!response.ok) {
-        showMessage("Não foi possível carregar o paciente para edição.", "error");
-        return;
-      }
+          <div class="list-body" id="psicologosList" aria-live="polite">
+            <div class="muted" style="padding:10px;">Carregando psicólogos...</div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-      const p = await response.json();
+    <!-- Coluna direita: Pacientes -->
+    <section class="card" id="pacientesCard" aria-label="Gestão de pacientes">
+      <div class="card-header">
+        <div>
+          <h2>Pacientes</h2>
+          <p class="muted">
+            Cadastre pacientes com <b>gravidade</b> e vincule a um <b>psicólogo</b>.
+            Use o filtro por psicólogo para visualizar a lista vinculada.
+          </p>
+        </div>
 
-      editId = id;
-      inputNome.value = p.nome ?? "";
-      inputEmail.value = p.email ?? "";
-      inputTelefone.value = p.telefone ?? "";
+        <div class="header-actions">
+          <div class="selected" id="selectedPsicologo" aria-live="polite">
+            Selecionado: <span class="muted">nenhum</span>
+          </div>
+          <button class="btn" id="btnRefreshPacientes" type="button" aria-label="Atualizar lista de pacientes">
+            Atualizar
+          </button>
+          <button class="btn ghost" id="btnLimparSelecao" type="button" aria-label="Limpar seleção de psicólogo">
+            Limpar seleção
+          </button>
+        </div>
+      </div>
 
-      btnCancelar.style.display = "inline-block";
-      modoPill.textContent = `Modo: Editar (ID ${id})`;
-      btnSalvar.textContent = "Salvar alterações";
+      <div class="form" aria-label="Formulário e lista de pacientes">
+        <div class="form-title">Cadastrar / Editar Paciente</div>
 
-      window.scrollTo({ top: 0, behavior: "smooth" });
+        <div class="grid2">
+          <div class="field">
+            <label for="pNome">Nome</label>
+            <input
+              id="pNome"
+              type="text"
+              placeholder="Ex: Paciente Gravidade"
+              autocomplete="name"
+              maxlength="140"
+            />
+          </div>
 
-    } catch (e) {
-      showMessage("Erro ao conectar com o servidor.", "error");
-    }
-  }
+          <div class="field">
+            <label for="pEmail">Email</label>
+            <input
+              id="pEmail"
+              type="email"
+              placeholder="Ex: paciente@email.com"
+              autocomplete="email"
+              inputmode="email"
+              maxlength="160"
+            />
+          </div>
+        </div>
 
-  async function deletarPaciente(id) {
-    clearMessage();
+        <div class="grid3">
+          <div class="field">
+            <label for="pTel">Telefone</label>
+            <input
+              id="pTel"
+              type="tel"
+              placeholder="Ex: 61999990000"
+              autocomplete="tel"
+              inputmode="tel"
+              maxlength="20"
+            />
+          </div>
 
-    const ok = confirm(`Tem certeza que deseja deletar o paciente ID ${id}?`);
-    if (!ok) return;
+          <div class="field">
+            <label for="pGrav">Gravidade</label>
+            <select id="pGrav" aria-label="Selecione a gravidade do paciente">
+              <option value="">(opcional)</option>
+              <option value="BAIXO">BAIXO</option>
+              <option value="MODERADO">MODERADO</option>
+              <option value="CRITICO">CRITICO</option>
+            </select>
+          </div>
 
-    try {
-      const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+          <div class="field">
+            <label for="pPsicologo">Psicólogo</label>
+            <select id="pPsicologo" aria-label="Selecione um psicólogo para vincular o paciente">
+              <option value="">(selecione)</option>
+            </select>
+            <div class="small muted">Dica: ao selecionar na lista à esquerda, preenche aqui.</div>
+          </div>
+        </div>
 
-      if (!response.ok) {
-        const txt = await response.text();
-        showMessage(txt || "Erro ao deletar paciente.", "error");
-        return;
-      }
+        <div class="row">
+          <button class="btn" id="btnSalvarPaciente" type="button">
+            Salvar Paciente
+          </button>
+          <button class="btn ghost" id="btnCancelarEdicao" type="button" style="display:none;">
+            Cancelar edição
+          </button>
+          <span class="pill" id="modoPaciente">Modo: Criar</span>
+        </div>
 
-      if (editId === id) resetFormToCreate();
+        <div class="divider" aria-hidden="true"></div>
 
-      showMessage("Paciente removido!", "success");
-      await listarPacientes();
-    } catch (e) {
-      showMessage("Erro ao conectar com o servidor.", "error");
-    }
-  }
+        <div class="table-head">
+          <div class="table-title">Lista de Pacientes</div>
 
-  btnCancelar.addEventListener("click", resetFormToCreate);
+          <div class="table-tools" aria-label="Filtros de pacientes">
+            <select id="filtroGravidade" class="mini" aria-label="Filtrar por gravidade">
+              <option value="">Gravidade: Todas</option>
+              <option value="BAIXO">BAIXO</option>
+              <option value="MODERADO">MODERADO</option>
+              <option value="CRITICO">CRITICO</option>
+            </select>
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    clearMessage();
+            <input
+              id="pFiltro"
+              class="search"
+              placeholder="Buscar paciente..."
+              autocomplete="off"
+              aria-label="Buscar paciente por nome, email, telefone ou gravidade"
+            />
+          </div>
+        </div>
 
-    const nome = inputNome.value.trim();
-    const email = inputEmail.value.trim();
-    const telefone = normalizeTelefone(inputTelefone.value.trim());
+        <div class="table-wrap" role="region" aria-label="Tabela de pacientes" tabindex="0">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:70px;">ID</th>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Telefone</th>
+                <th style="width:140px;">Gravidade</th>
+                <th style="width:160px;">Psicólogo</th>
+                <th style="width:220px;">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="pacientesTable">
+              <tr><td colspan="7" class="muted">Carregando pacientes...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
 
-    if (!nome || !email || !telefone) {
-      showMessage("Preencha todos os campos.", "error");
-      return;
-    }
+  <footer class="footer" role="contentinfo">
+    <div class="footer-inner">
+      <span class="muted">CRUD Pacientes • Front-end estático consumindo API Spring Boot.</span>
+      <span class="muted">Atalhos: use “Atualizar” para recarregar listas e “Limpar seleção” para voltar ao geral.</span>
+    </div>
+  </footer>
 
-    setLoading(true);
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
-    try {
-      const payload = { nome, email, telefone };
-      const isEdit = editId !== null;
-
-      const response = await fetch(isEdit ? `${API_URL}/${editId}` : API_URL, {
-        method: isEdit ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        const txt = await response.text();
-        showMessage(txt || "Erro ao salvar.", "error");
-        setLoading(false);
-        return;
-      }
-
-      showMessage(isEdit ? "Paciente atualizado com sucesso!" : "Paciente salvo com sucesso!", "success");
-
-      if (isEdit) resetFormToCreate();
-      else form.reset();
-
-      await listarPacientes();
-    } catch (e) {
-      showMessage("Erro ao conectar com o servidor.", "error");
-    } finally {
-      setLoading(false);
-    }
-  });
-
-  listarPacientes();
-</script>
-
+  <script src="./app.js"></script>
 </body>
 </html>

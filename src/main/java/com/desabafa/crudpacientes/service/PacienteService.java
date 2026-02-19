@@ -1,9 +1,12 @@
 package com.desabafa.crudpacientes.service;
 
+import com.desabafa.crudpacientes.domain.Gravidade;
 import com.desabafa.crudpacientes.domain.Paciente;
+import com.desabafa.crudpacientes.domain.Psicologo;
 import com.desabafa.crudpacientes.dto.PacienteRequest;
 import com.desabafa.crudpacientes.dto.PacienteResponse;
 import com.desabafa.crudpacientes.repository.PacienteRepository;
+import com.desabafa.crudpacientes.repository.PsicologoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,18 +16,42 @@ import java.util.List;
 public class PacienteService {
 
   private final PacienteRepository repository;
+  private final PsicologoRepository psicologoRepository;
 
-  public PacienteService(PacienteRepository repository) {
+  public PacienteService(PacienteRepository repository, PsicologoRepository psicologoRepository) {
     this.repository = repository;
+    this.psicologoRepository = psicologoRepository;
   }
 
   private PacienteResponse toResponse(Paciente p) {
-    return new PacienteResponse(p.getId(), p.getNome(), p.getEmail(), p.getTelefone());
+    Long psicologoId = (p.getPsicologo() != null) ? p.getPsicologo().getId() : null;
+    return new PacienteResponse(
+        p.getId(),
+        p.getNome(),
+        p.getEmail(),
+        p.getTelefone(),
+        psicologoId,
+        p.getGravidade()
+    );
+  }
+
+  private Psicologo resolvePsicologo(Long psicologoId) {
+    if (psicologoId == null) return null;
+
+    return psicologoRepository.findById(psicologoId)
+        .orElseThrow(() -> new NotFoundException("Psicólogo não encontrado (id=" + psicologoId + ")"));
+  }
+
+  private Gravidade resolveGravidade(Gravidade gravidade) {
+    // por enquanto é opcional, então só retorna o que vier
+    return gravidade;
   }
 
   @Transactional
   public PacienteResponse criar(PacienteRequest req) {
     Paciente p = new Paciente(req.getNome(), req.getEmail(), req.getTelefone());
+    p.setPsicologo(resolvePsicologo(req.getPsicologoId()));
+    p.setGravidade(resolveGravidade(req.getGravidade()));
     return toResponse(repository.save(p));
   }
 
@@ -48,6 +75,8 @@ public class PacienteService {
     p.setNome(req.getNome());
     p.setEmail(req.getEmail());
     p.setTelefone(req.getTelefone());
+    p.setPsicologo(resolvePsicologo(req.getPsicologoId()));
+    p.setGravidade(resolveGravidade(req.getGravidade()));
 
     return toResponse(repository.save(p));
   }
